@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>LOGIN PAGE</h1>
+    <form action="" id="form">
+      <input
+        type="email"
+        id="loginid"
+        name="loginid"
+        placeholder="login id"
+      /><br />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        placeholder="password"
+      />
+      <button type="submit" value="submit" onclick="login(event)">
+        Submit
+      </button>
+    </form>
+    <script>
+      async function login(event) {
+        event.preventDefault();
+        var loginid = document.getElementById("loginid").value;
+        var password = document.getElementById("password").value;
+
+        const response = await fetch(
+          "https://qa2.sunbasedata.com/sunbase/portal/api/assignment_auth.jsp",
+          {
+            method: "post",
+            // headers: {
+            //   "Content-Type": "application/json",
+            //   "Access-Control-Allow-Origin": "*",
+            //   "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            // },
+            body: JSON.stringify({
+              login_id: loginid,
+              password: password,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+
+          localStorage.setItem("access_token", data.access_token);
+           window.location.href = "customerList.html";
+        } else {
+          console.error("Login failed");
+        }
+      }
+    </script>
+  </body>
+</html>

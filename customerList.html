@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link href="styles.css" rel="stylesheet" />
+    <!-- <script src="server.js" defer></script> -->
+  </head>
+  <body>
+    <button id="fetchButton" onclick="getlist()">Get Customer list</button>
+    <a href="create.html"><button>Add Customer</button></a>
+
+    <h3>Customer list</h3>
+    <table id="dataTable">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Address</th>
+          <th>City</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="myModal" class="modal">
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1>Update this Customer</h1>
+
+        <input
+          type="text"
+          id="fname"
+          name="fname"
+          placeholder="First Name"
+        /><br />
+        <input
+          type="text"
+          id="lname"
+          name="lname"
+          placeholder="Last Name"
+        /><br />
+        <input
+          type="text"
+          id="street"
+          name="street"
+          placeholder="Street"
+        /><br />
+        <input
+          type="text"
+          id="address"
+          name="address"
+          placeholder="Address"
+        /><br />
+        <input type="text" id="city" name="city" placeholder="City" /><br />
+        <input type="text" id="state" name="state" placeholder="State" /><br />
+
+        <input type="email" id="email" name="email" placeholder="Email" /><br />
+
+        <input type="text" id="phone" name="phone" placeholder="Phone" /><br />
+
+        <button id="submit">Submit</button>
+      </div>
+    </div>
+
+    <script>
+      async function getlist() {
+        try {
+          const token = localStorage.getItem("access_token");
+          const response = await fetch("http://localhost:3000/fetchData", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Data from local server:", data);
+            updateTable(data);
+          } else {
+            console.error(
+              "Error fetching data from local server:",
+              response.status
+            );
+          }
+        } catch (error) {
+          console.error("Unexpected error:", error);
+        }
+      }
+
+      function updateTable(data) {
+        const tableBody = document.querySelector("#dataTable tbody");
+
+        tableBody.innerHTML = "";
+
+        data.forEach((item) => {
+          const newRow = tableBody.insertRow();
+          const fname = newRow.insertCell(0);
+          const lname = newRow.insertCell(1);
+          const address = newRow.insertCell(2);
+          const city = newRow.insertCell(3);
+          const email = newRow.insertCell(4);
+          const phone = newRow.insertCell(5);
+          const action = newRow.insertCell(6);
+          // const uuid = newRow.insertCell(7);
+
+          fname.textContent = item.first_name;
+          lname.textContent = item.last_name;
+          address.textContent = item.address;
+          city.textContent = item.city;
+          email.textContent = item.email;
+          phone.textContent = item.phone;
+
+          // uuid.textContent = item.uuid;
+
+          const editButton = document.createElement("button");
+          editButton.textContent = "Edit";
+          editButton.classList.add("myBtn");
+          editButton.addEventListener("click", () => {
+            handleEdit(item.uuid);
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => {
+            handleDelete(item.uuid);
+          });
+          action.appendChild(editButton);
+          action.appendChild(deleteButton);
+        });
+      }
+
+      async function handleDelete(uuid) {
+        try {
+          console.log(uuid);
+
+          const token = localStorage.getItem("access_token");
+
+          const response = await fetch("http://localhost:3000/delete", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              uuid: uuid,
+            }),
+          });
+
+          if (response.ok) {
+            const responseData = await response.json();
+            console.log("Customer deleted successfully:", responseData);
+
+            getlist();
+          } else {
+            const errorData = await response.json();
+            console.error("Error deleting customer:", errorData);
+          }
+        } catch (error) {
+          console.error("Unexpected error:", error);
+        }
+      }
+
+      async function handleEdit(updateuuid) {
+        var modal = document.getElementById("myModal");
+
+        var span = document.getElementsByClassName("close")[0];
+
+        modal.style.display = "block";
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+          modal.style.display = "none";
+        };
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        };
+
+        document
+          .getElementById("submit")
+          .addEventListener("click", async function create() {
+            try {
+              const firstName = document.getElementById("fname").value;
+              const lastName = document.getElementById("lname").value;
+              const street = document.getElementById("street").value;
+              const address = document.getElementById("address").value;
+              const city = document.getElementById("city").value;
+              const state = document.getElementById("state").value;
+              const email = document.getElementById("email").value;
+              const phone = document.getElementById("phone").value;
+              console.log(updateuuid);
+
+              console.log(firstName);
+
+              const token = localStorage.getItem("access_token");
+              const response = await fetch("http://localhost:3000/update", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                  fname: firstName,
+                  lname: lastName,
+                  street: street,
+                  address: address,
+                  city: city,
+                  state: state,
+                  email: email,
+                  phone: phone,
+                  uuid: updateuuid,
+                }),
+              });
+
+              if (response.ok) {
+                const responseData = await response.json();
+                console.log("Customer updated successfully:", responseData);
+                getlist();
+                document.getElementsByClassName("close")[0].click();
+              } else {
+                const errorData = await response.json();
+                console.error("Error updating customer:", errorData);
+              }
+            } catch (error) {
+              console.error("Unexpected error:");
+            }
+          });
+      }
+    </script>
+  </body>
+</html>

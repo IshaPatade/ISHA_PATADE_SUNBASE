@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Create a new Customer</h1>
+
+    <input type="text" id="fname" name="fname" placeholder="First Name" /><br />
+    <input type="text" id="lname" name="lname" placeholder="Last Name" /><br />
+    <input type="text" id="street" name="street" placeholder="Street" /><br />
+    <input
+      type="text"
+      id="address"
+      name="address"
+      placeholder="Address"
+    /><br />
+    <input type="text" id="city" name="city" placeholder="City" /><br />
+    <input type="text" id="state" name="state" placeholder="State" /><br />
+
+    <input type="email" id="email" name="email" placeholder="Email" /><br />
+
+    <input type="text" id="phone" name="phone" placeholder="Phone" /><br />
+
+    <button id="submit">Submit</button>
+
+    <script defer>
+      document
+        .getElementById("submit")
+        .addEventListener("click", async function create() {
+          try {
+            const firstName = document.getElementById("fname").value;
+            const lastName = document.getElementById("lname").value;
+            const street = document.getElementById("street").value;
+            const address = document.getElementById("address").value;
+            const city = document.getElementById("city").value;
+            const state = document.getElementById("state").value;
+            const email = document.getElementById("email").value;
+            const phone = document.getElementById("phone").value;
+
+            console.log(firstName);
+
+            const token = localStorage.getItem("access_token");
+            const response = await fetch("http://localhost:3000/create", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                fname: firstName,
+                lname: lastName,
+                street: street,
+                address: address,
+                city: city,
+                state: state,
+                email: email,
+                phone: phone,
+              }),
+            });
+
+            if (response.ok) {
+              const responseData = await response.json();
+              console.log("Customer created successfully:", responseData);
+            } else {
+              const errorData = await response.json();
+              console.error("Error creating customer:", errorData);
+            }
+          } catch (error) {
+            console.error("Unexpected error:");
+          }
+        });
+    </script>
+  </body>
+</html>
