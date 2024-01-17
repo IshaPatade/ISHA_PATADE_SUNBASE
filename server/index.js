@@ -11,7 +11,7 @@ app.use(bodyParser.json());
 app.get("/fetchData", async (req, res) => {
   try {
     const remoteApiUrl =
-      "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list";
+      "https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=get_customer_list";
     const remoteApiResponse = await fetch(remoteApiUrl, {
       headers: {
         Authorization: req.headers.authorization,
@@ -34,7 +34,7 @@ app.post("/create", async (req, res) => {
     console.log(fname, lname);
     const token = req.headers.authorization;
     const remoteApiUrl =
-      "https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=create";
+      "https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=create";
     const remoteApiResponse = await fetch(remoteApiUrl, {
       method: "post",
       headers: {
@@ -53,6 +53,9 @@ app.post("/create", async (req, res) => {
     });
 
     console.log(remoteApiResponse);
+    res.status(200).json({
+      message: "OK",
+    });
   } catch (error) {
     console.error("Error fetching data from remote API:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -65,7 +68,7 @@ app.post("/delete", async (req, res) => {
     console.log(uuid);
     const token = req.headers.authorization;
 
-    const apiUrl = `https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=delete&uuid=${uuid}`;
+    const apiUrl = `https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=delete&uuid=${uuid}`;
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
@@ -93,7 +96,7 @@ app.post("/update", async (req, res) => {
     console.log(uuid);
     console.log(fname, lname);
     const token = req.headers.authorization;
-    const remoteApiUrl = `https://qa2.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=update&uuid=${uuid}`;
+    const remoteApiUrl = `https://qa.sunbasedata.com/sunbase/portal/api/assignment.jsp?cmd=update&uuid=${uuid}`;
     const remoteApiResponse = await fetch(remoteApiUrl, {
       method: "post",
       headers: {

@@ -8,7 +8,7 @@
     <!-- <script src="server.js" defer></script> -->
   </head>
   <body>
-    <button id="fetchButton" onclick="getlist()">Get Customer list</button>
+    <!-- <button id="fetchButton" onclick="getlist()">Get Customer list</button> -->
     <a href="create.html"><button>Add Customer</button></a>
 
     <h3>Customer list</h3>
@@ -93,6 +93,8 @@
           console.error("Unexpected error:", error);
         }
       }
+
+      getlist();
 
       function updateTable(data) {
         const tableBody = document.querySelector("#dataTable tbody");
